@@ -13,9 +13,9 @@ component_count = {'ic':0 ,
                    'transistor':0}
 
 # Load the model.
-model = YOLO('PCB-Segment-Detect/weights/500-epochs-kuo.pt')
+model = YOLO('PCB-Segment-Detect/weights/6-classes-kuo.pt')
 
-classes_to_include = ['ic', 'resistor', 'capacitor', 'led', 'button', 'diode', 'inductor', 'transistor']
+classes_to_include = ['button', 'capacitor', 'ic', 'led', 'resistor', 'transistor']
 
 def split_and_display(image_path):
     # Open the image
