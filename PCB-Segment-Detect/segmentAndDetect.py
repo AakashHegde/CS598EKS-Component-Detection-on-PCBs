@@ -13,7 +13,7 @@ component_count = {'ic':0 ,
                    'transistor':0}
 
 # Load the model.
-model = YOLO('PCB-Segment-Detect/weights/best.pt')
+model = YOLO('PCB-Segment-Detect/weights/500-epochs-kuo.pt')
 
 classes_to_include = ['ic', 'resistor', 'capacitor', 'led', 'button', 'diode', 'inductor', 'transistor']
 
@@ -24,9 +24,9 @@ def split_and_display(image_path):
     # Get the dimensions of the image
     width, height = img.size
 
-    # segment dimentions
-    seg_x = int(0.33 * width)
-    seg_y = int(0.33 * height)
+    # Segment dimentions
+    seg_x = int(0.5 * width)
+    seg_y = int(0.5 * height)
 
     # Calculate the number of segments in each dimension
     num_segments_x = width // seg_x
@@ -62,13 +62,13 @@ def split_and_display(image_path):
                         boxes_to_keep.append(box)
                         component_count[detected_class] += 1
                 result.boxes = boxes_to_keep
-                # result.show()  # display to screen
+                result.show()  # display to screen
     plt.show()
 
 
 
 # Example usage
-image = 'Sample-Images/PCBImage2.jpg'
+image = 'Sample-Images/PCBImage3.jpg'
 
 split_and_display(image)
 print(component_count)
