@@ -11,7 +11,7 @@ component_count = {'ic':0 ,
                    'transistor':0}
 
 # Load the model.
-model = YOLO('PCB-Segment-Detect/weights/6-classes-kuo.pt')
+model = YOLO('PCB-Segment-Detect/weights/6-classes-kuo-nano.pt')
 
 classes_to_include = ['button', 'capacitor', 'ic', 'led', 'resistor', 'transistor']
 
