@@ -7,9 +7,7 @@ component_count = {'ic':0 ,
                    'resistor':0, 
                    'capacitor':0, 
                    'led':0, 
-                   'button':0, 
-                   'diode':0, 
-                   'inductor':0, 
+                   'button':0,  
                    'transistor':0}
 
 # Load the model.
@@ -47,22 +45,15 @@ def split_and_display(image_path):
             # Crop the segment
             segment = img.crop((left, upper, right, lower))
 
-            # Display the segment
-            axs[y, x].imshow(segment)
-            axs[y, x].axis('off')  # Turn off axis labels
-
-            results = model(segment, conf=0.20)
+            results = model(segment, conf=0.20, verbose=False)
 
             # Process results list
             for result in results:
-                boxes_to_keep = []
-                for box in result.boxes:
-                    detected_class = model.names[int(box.cls)]
-                    if(detected_class in classes_to_include):
-                        boxes_to_keep.append(box)
-                        component_count[detected_class] += 1
-                result.boxes = boxes_to_keep
-                result.show()  # display to screen
+                # result.show()  # display to screen
+                plot = result.plot()
+                axs[y, x].imshow(plot)
+                axs[y, x].axis('off')  # Turn off axis labels
+
     plt.show()
 
 
