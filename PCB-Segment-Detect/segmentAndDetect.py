@@ -15,10 +15,12 @@ model = YOLO('PCB-Segment-Detect/weights/6-classes-kuo.pt')
 
 classes_to_include = ['button', 'capacitor', 'ic', 'led', 'resistor', 'transistor']
 
-def split_and_display(image_path):
-    # Open the image
-    img = Image.open(image_path)
+def detect_components(img):
+    result = model(img, conf=0.20, verbose=False)
+    plot = result[0].plot()
+    return plot
 
+def split_and_display(img):
     # Get the dimensions of the image
     width, height = img.size
 
@@ -41,25 +43,26 @@ def split_and_display(image_path):
             upper = y * seg_y
             right = min(left + seg_x, width)
             lower = min(upper + seg_y, height)
-
             # Crop the segment
             segment = img.crop((left, upper, right, lower))
-
-            results = model(segment, conf=0.20, verbose=False)
-
-            # Process results list
-            for result in results:
-                # result.show()  # display to screen
-                plot = result.plot()
-                axs[y, x].imshow(plot)
-                axs[y, x].axis('off')  # Turn off axis labels
-
+            
+            # Run inference on the segment
+            result = detect_components(segment)
+            
+            # Add the result to subplot
+            axs[y, x].imshow(result)
+            axs[y, x].axis('off')
+    
+    # Display the subplot
     plt.show()
 
+def main():
+    image_path = 'Sample-Images/PCBImage3.jpg'
+    
+    # Open the image
+    image = Image.open(image_path)
+    split_and_display(image)
+    print(component_count)
 
-
-# Example usage
-image = 'Sample-Images/PCBImage3.jpg'
-
-split_and_display(image)
-print(component_count)
+if __name__ == "__main__":
+    main()
