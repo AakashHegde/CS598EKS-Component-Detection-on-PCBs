@@ -5,7 +5,7 @@ from libcamera import controls
 import time
 import cv2
 
-from segmentAndDetect import split_and_display, detect_components
+from segmentAndDetect import split_and_detect, detect_components
 
 picam2 = Picamera2()  ## Create a camera object
 

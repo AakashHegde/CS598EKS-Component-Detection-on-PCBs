@@ -1,5 +1,6 @@
 from PIL import Image
 import matplotlib.pyplot as plt
+import numpy as np
 
 from ultralytics import YOLO
 
@@ -20,9 +21,10 @@ def detect_components(img):
     plot = result[0].plot()
     return plot
 
-def split_and_display(img):
+def split_and_detect(img):
+
     # Get the dimensions of the image
-    width, height = img.size
+    width, height, _ = img.shape
 
     # Segment dimentions
     seg_x = int(0.5 * width)
@@ -33,10 +35,13 @@ def split_and_display(img):
     num_segments_y = height // seg_y
 
     # Initialize subplot parameters
-    fig, axs = plt.subplots(num_segments_y, num_segments_x)
+    # ~ fig, axs = plt.subplots(num_segments_y, num_segments_x)
+    
+    stitched_image = np.array([])
 
     # Iterate through each segment
     for y in range(num_segments_y):
+        horizontal_stitch = np.array([])
         for x in range(num_segments_x):
             # Define the bounding box for the segment
             left = x * seg_x
@@ -44,24 +49,36 @@ def split_and_display(img):
             right = min(left + seg_x, width)
             lower = min(upper + seg_y, height)
             # Crop the segment
-            segment = img.crop((left, upper, right, lower))
+            segment = img[left:right, upper:lower]
+            # ~ segment = img.crop((left, upper, right, lower))
             
             # Run inference on the segment
             result = detect_components(segment)
             
-            # Add the result to subplot
-            axs[y, x].imshow(result)
-            axs[y, x].axis('off')
+            # Stitch the output of the segment horizontally
+            if horizontal_stitch.size == 0:
+                horizontal_stitch = np.array(result)
+            else:
+                horizontal_stitch = np.concatenate((horizontal_stitch, result), axis=0)
+        
+        # Stitch the horizontal segments vertically
+        if stitched_image.size == 0:
+            stitched_image = horizontal_stitch
+        else:
+            stitched_image = np.concatenate((stitched_image, horizontal_stitch), axis=1)
     
-    # Display the subplot
-    plt.show()
+    return stitched_image
 
 def main():
     image_path = 'Sample-Images/PCBImage3.jpg'
     
     # Open the image
     image = Image.open(image_path)
-    split_and_display(image)
+    ret = split_and_detect(np.array(image))
+    
+    # Display the stiched image
+    plt.imshow(ret)
+    plt.show()
     print(component_count)
 
 if __name__ == "__main__":
