@@ -4,20 +4,21 @@ import numpy as np
 
 from ultralytics import YOLO
 
-component_count = {'ic':0 ,
-                   'resistor':0, 
-                   'capacitor':0, 
-                   'led':0, 
-                   'button':0,  
-                   'transistor':0}
-
 # Load the model.
-model = YOLO('PCB-Segment-Detect/weights/6-classes-kuo-nano.pt')
+model = YOLO('PCB-Segment-Detect/weights/6-classes-kuo-xl.pt')
 
-classes_to_include = ['button', 'capacitor', 'ic', 'led', 'resistor', 'transistor']
+components_to_detect = ['button', 'capacitor', 'ic', 'led', 'resistor', 'transistor']
+component_count = dict.fromkeys(components_to_detect, 0)
 
-def detect_components(img):
-    result = model(img, conf=0.20, verbose=False)
+def detect_components(img, show=False):
+    result = model.predict(task='detect', source=img, conf=0.20, show_conf=False, verbose=False, show=show)
+    
+    # Process results to get component count
+    for box in result[0].boxes:
+        detected_class = model.names[int(box.cls)]
+        if(detected_class in components_to_detect):
+            component_count[detected_class] += 1
+    
     plot = result[0].plot()
     return plot
 
@@ -54,7 +55,7 @@ def split_and_detect(img):
             
             # Run inference on the segment
             result = detect_components(segment)
-            
+
             # Stitch the output of the segment horizontally
             if horizontal_stitch.size == 0:
                 horizontal_stitch = np.array(result)

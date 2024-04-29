@@ -1,0 +1,2 @@
+File: Results/predictions-kuo-xl.jpg
+Detections: {'button': 1, 'capacitor': 5, 'ic': 12, 'led': 0, 'resistor': 24, 'transistor': 0}
